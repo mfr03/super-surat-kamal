@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Constants\DbConst;
 class Warga extends Model
 {
-    protected $table = 'warga';
+    protected $table = DbConst::WARGA;
 
     protected $primaryKey = 'id';
 
@@ -19,7 +19,9 @@ class Warga extends Model
         'agama',
         'pekerjaan',
         'alamat',
-        'desa_kelurahan',
+        'nomor_hp',
+        'kartu_keluarga',
+        'desa-kelurahan',
         'kecamatan',
         'kabupaten',
         'provinsi',
@@ -30,7 +32,7 @@ class Warga extends Model
 
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'tanggal_pencatatan_perkawinan',
+        'tanggal_pencatatan_perkawinan' => 'date',
     ];
 
 }

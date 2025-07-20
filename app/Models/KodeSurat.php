@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Constants\DbConst;
 
 class KodeSurat extends Model
 {
+    protected $table = DbConst::KODE_SURAT;
+    
     protected $fillable = [
         'kode',
-        'deskripsi'
+        'detail'
     ];
 
     public function suratKelahiran(): HasMany 

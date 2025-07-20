@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Constants\DbConst;
 
 class Bayi extends Model
-{
+{   
+    protected $table = DbConst::BAYI;
 
     protected $fillable = [
         'nama',

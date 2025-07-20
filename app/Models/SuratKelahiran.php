@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Constants\DbConst;
 
 class SuratKelahiran extends Model
 {
+    protected $table = DbConst::SURAT_KELAHIRAN;
+    
     protected $fillable = [
         'kode_surat_id',
         'nomor_surat',

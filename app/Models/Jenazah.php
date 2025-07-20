@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Constants\DbConst;
 class Jenazah extends Model
 {
+    protected $table = DbConst::JENAZAH;
     protected $fillable = [
         'warga_id',
         'anak_ke',
