@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\WargaResource\Pages;
-use App\Filament\Resources\WargaResource\RelationManagers;
-use App\Forms\Filaments\WargaForms;
-use App\Models\Warga;
+use App\Filament\Resources\PejabatResource\Pages;
+use App\Filament\Resources\PejabatResource\RelationManagers;
+use App\Forms\Filaments\PejabatForms;
+use App\Models\Pejabat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,24 +14,27 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class WargaResource extends Resource
+class PejabatResource extends Resource
 {
-    protected static ?string $model = Warga::class;
+    protected static ?string $model = Pejabat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Data Master';
-
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(WargaForms::form());
+            ->schema([
+                ...PejabatForms::form()
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(WargaForms::table())
+            ->columns([
+                ...PejabatForms::table()
+            ])
             ->filters([
                 //
             ])
@@ -55,9 +58,9 @@ class WargaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWargas::route('/'),
-            'create' => Pages\CreateWarga::route('/create'),
-            'edit' => Pages\EditWarga::route('/{record}/edit'),
+            'index' => Pages\ListPejabats::route('/'),
+            'create' => Pages\CreatePejabat::route('/create'),
+            'edit' => Pages\EditPejabat::route('/{record}/edit'),
         ];
     }
 }

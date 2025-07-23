@@ -18,7 +18,7 @@ class SuratPengantarIzinPerjamuan extends Model
         'keperluan',
         'undangan',
         'jenis_pertunjukan',
-        'hari_tanggal',
+        'hari-tanggal',
         'berlaku_mulai',
         'keterangan_lain_lain'
     ];

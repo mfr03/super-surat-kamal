@@ -52,6 +52,7 @@ class BayiForms
             Forms\Components\DatePicker::make('tanggal_lahir')
                 ->label('Tanggal Lahir Bayi')
                 ->displayFormat('d F Y')
+                ->format('Y-m-d')   
                 ->closeOnDateSelection()
                 ->required(),
 
@@ -160,6 +161,7 @@ class BayiForms
             Forms\Components\DatePicker::make('tanggal_lahir')
                 ->label('Tanggal Lahir Bayi')
                 ->displayFormat('d F Y')
+                ->format('Y-m-d')
                 ->closeOnDateSelection()
                 ->disabled($isDisabled)
                 ->required(),

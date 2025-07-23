@@ -20,61 +20,22 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Common\CustomComponents;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class SuratPengantarIzinPerjamuanResource extends Resource
 {
     protected static ?string $model = SuratPengantarIzinPerjamuan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
+    protected static ?string $navigationGroup = 'Jenis Surat';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
 
-                Forms\Components\Section::make('Data Surat')
-                    ->collapsible()
-                    ->schema([
-
-                        Forms\Components\Select::make('kode_surat')
-                            ->label('Pilih Kode Surat')
-                            ->options(
-                                KodeSurat::query()
-                                    ->get()
-                                    ->mapWithKeys(function ($item) {
-                                    return [$item->id => "{$item->kode}: {$item->detail}"]; 
-                                    })
-                                )
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-                        
-                        Forms\Components\TextInput::make('nomor')
-                            ->label('Nomor')
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-
-                        Forms\Components\TextInput::make('nomor_surat')
-                            ->label('Nomor Surat')
-                            ->required()
-                            ->disabled(true),
-
-                        Forms\Components\Select::make('jabatan_ttd')
-                            ->label('Pilih Jabatan TTD')
-                            ->columnSpanFull()
-                            ->options([
-                                'kepala_desa' => 'Kepala Desa Kamal',
-                                'sekdes' => 'Sekretaris Desa',
-                                'kaur_tu' => 'Kaur TU',
-                            ])
-                            ->required(),
-
-                    ]),
-
+                CustomComponents::sectionDataSurat(SuratPengantarIzinPerjamuan::class),
 
                 Forms\Components\Section::make('Pemohon Surat')
                     ->collapsible()
@@ -111,7 +72,7 @@ class SuratPengantarIzinPerjamuanResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->helperText('Contoh: Musik, Tari, dll'),
-                        Forms\Components\TextInput::make('hari_tanggal')
+                        Forms\Components\TextInput::make('hari-tanggal')
                             ->label('Hari dan Tanggal')
                             ->required()
                             ->maxLength(255)
@@ -121,7 +82,7 @@ class SuratPengantarIzinPerjamuanResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->helperText('Contoh: 11 Juni 2025 S / D Selesai'),
-                            
+
                         Forms\Components\TextInput::make('keterangan_lain_lain')
                             ->label('Keterangan Lain-Lain')
                             ->required()
@@ -134,7 +95,50 @@ class SuratPengantarIzinPerjamuanResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nomor_surat')
+                    ->label('Nomor Surat')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('warga.nama')
+                    ->label('Nama Pemohon')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('keperluan')
+                    ->label('Keperluan')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('undangan')
+                    ->label('Undangan')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('jenis_pertunjukan')
+                    ->label('Jenis Pertunjukan')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('hari_tanggal')
+                    ->label('Hari & Tanggal')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('berlaku_mulai')
+                    ->label('Berlaku Mulai')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('keterangan_lain_lain')
+                    ->label('Keterangan Lain-Lain')
+                    ->limit(30)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d M Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -164,4 +168,25 @@ class SuratPengantarIzinPerjamuanResource extends Resource
             'edit' => Pages\EditSuratPengantarIzinPerjamuan::route('/{record}/edit'),
         ];
     }
+
+    public static function updateNomorSurat(Set $set, Get $get): void {
+
+        $kodeSuratId = $get('kode_surat');
+        $nomor = $get('nomor');
+
+        if (! $kodeSuratId || ! $nomor) {
+            $set('nomor_surat', null);
+            return;
+        }
+
+        $kodeSurat = KodeSurat::find($kodeSuratId)?->kode ?? '';
+        $monthRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][Carbon::now()->month];
+        $year = Carbon::now()->year;
+
+        $nomorSurat = "{$kodeSurat}/{$nomor}/{$monthRoman}/{$year}";
+
+        $set('nomor_surat', $nomorSurat);
+
+    }
+
 }

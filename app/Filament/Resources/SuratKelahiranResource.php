@@ -18,39 +18,26 @@ use App\Forms\Filaments\BayiForms;
 use Closure;
 use \Illuminate\Support\Str;
 use App\Common\CustomComponents;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Carbon;
 
 
 class SuratKelahiranResource extends Resource
 {
     protected static ?string $model = SuratKelahiran::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
+    protected static ?string $navigationGroup = 'Jenis Surat';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
 
-                Forms\Components\Section::make('Data Surat')
-                ->collapsible()
-                ->schema([
-                    Forms\Components\TextInput::make('nomor_surat')
-                        ->label('Nomor Surat')
-                        ->required()
-                        ->placeholder('474.1/xxx/mm/yyyy')
-                        ->hint('Nomor surat terakhir: ' . SuratKelahiran::latest('created_at')->value('nomor_surat'))
-                        ->reactive()
-                        ->maxLength(255),
-                    Forms\Components\Select::make('jabatan_ttd')
-                        ->label('Pilih Jabatan TTD')
-                        ->columnSpanFull()
-                        ->options([
-                            'kepala_desa' => 'Kepala Desa Kamal',
-                            'sekdes' => 'Sekretaris Desa',
-                            'kaur_tu' => 'Kaur TU',
-                        ])
-                        ->required(),
-                ]),
+                CustomComponents::sectionDataSurat(SuratKelahiran::class),
 
 
                 Forms\Components\Section::make('Data Kepala Keluarga')
@@ -169,39 +156,54 @@ class SuratKelahiranResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_surat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jabatan_ttd')
-                    ->searchable(),
+                    ->label('Nomor Surat')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('nama_kepala_keluarga')
-                    ->searchable(),
+                    ->label('Nama Kepala Keluarga')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('nomor_kepala_keluarga')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('bayi.id')
-                    ->numeric()
+                    ->label('Nomor Kepala Keluarga')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ibu.id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('bayi.nama')
+                    ->label('Nama Bayi')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ayah.id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('ibu.nama')
+                    ->label('Nama Ibu')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pelapor.id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('ayah.nama')
+                    ->label('Nama Ayah')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('saksiSatu.id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('pelapor.nama')
+                    ->label('Nama Pelapor')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('saksiDua.id')
-                    ->numeric()
+
+                Tables\Columns\TextColumn::make('saksiSatu.nama')
+                    ->label('Nama Saksi Satu')
+                    ->searchable()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('saksiDua.nama')
+                    ->label('Nama Saksi Dua')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d M Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -232,4 +234,25 @@ class SuratKelahiranResource extends Resource
             'edit' => Pages\EditSuratKelahiran::route('/{record}/edit'),
         ];
     }
+
+    public static function updateNomorSurat(Set $set, Get $get): void {
+
+        $kodeSuratId = $get('kode_surat');
+        $nomor = $get('nomor');
+
+        if (! $kodeSuratId || ! $nomor) {
+            $set('nomor_surat', null);
+            return;
+        }
+
+        $kodeSurat = \App\Models\KodeSurat::find($kodeSuratId)?->kode ?? '';
+        $monthRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][Carbon::now()->month];
+        $year = Carbon::now()->year;
+
+        $nomorSurat = "{$kodeSurat}/{$nomor}/{$monthRoman}/{$year}";
+
+        $set('nomor_surat', $nomorSurat);
+
+    }
+
 }

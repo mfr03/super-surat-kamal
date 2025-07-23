@@ -41,6 +41,7 @@ class WargaForms
                     Forms\Components\DatePicker::make($prefix . 'tanggal_lahir')
                         ->label('Tanggal Lahir')
                         ->native(false)
+                        ->format('Y-m-d')
                         ->displayFormat('d F Y')
                         ->closeOnDateSelection()
                         ->required()
@@ -149,6 +150,7 @@ class WargaForms
                     Forms\Components\DatePicker::make($prefix.'tanggal_lahir')
                         ->label('Tanggal Lahir')
                         ->native(false)
+                        ->format('Y-m-d')
                         ->displayFormat('d F Y')
                         ->closeOnDateSelection()
                         ->required()
@@ -244,7 +246,7 @@ class WargaForms
                     ->displayFormat('d F Y')
                     ->closeOnDateSelection()
                     ->hidden($married != true)
-                    ->disabled($isDisabled),
+                    ->required(),
                     
 
         ];
@@ -265,9 +267,9 @@ class WargaForms
             'nomor_hp'=> $prefix . 'nomor_hp',
             'desa-kelurahan' => $prefix . 'desa-kelurahan',
             'kecamatan' => $prefix . 'kecamatan',
-            'kabupatan' => $prefix . 'kabupaten',
+            'kabupaten' => $prefix . 'kabupaten',
             'provinsi' => $prefix . 'provinsi',
-            'kewarnegaraan' => $prefix . 'kewarganegaraan',
+            'kewarganegaraan' => $prefix . 'kewarganegaraan',
             'kebangsaan' => $prefix . 'kebangsaan',
             'tanggal_pencatatan_perkawinan' => $prefix . 'tanggal_pencatatan_perkawinan',
         ];
@@ -291,6 +293,8 @@ class WargaForms
                 Tables\Columns\TextColumn::make('pekerjaan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('alamat')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nomor_hp')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('desa-kelurahan')
                     ->searchable(),

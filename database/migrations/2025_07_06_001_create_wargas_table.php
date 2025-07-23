@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('tempat_lahir')->nullable(true);
             $table->string('agama')->nullable(true);
             $table->string('pekerjaan')->nullable(true);
-            $table->string('alamat')->nullable(true);
-            $table->string('alamat')->nullable(true);  
+            $table->string('alamat')->nullable(true); 
+            $table->string('kartu_keluarga')->nullable(true); 
             $table->string('nomor_hp')->nullable(true);
             $table->string('desa-kelurahan')->nullable(true);
             $table->string('kecamatan')->nullable(true);

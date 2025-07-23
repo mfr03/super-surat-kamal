@@ -20,7 +20,7 @@ class JenazahForms
                 ->collapsible()
                 ->schema([
                     CustomComponents::searchSelect(
-                        'warga_id', 'Nama Jenazah',
+                        'jenazah_id', 'Nama Jenazah',
                         'nama', 'Masukkan Nama Jenazah',
                         Warga::class, WargaForms::fieldMap(FormsConst::JENAZAH),
                         fn () => WargaForms::fields(false, FormsConst::JENAZAH),
@@ -28,8 +28,46 @@ class JenazahForms
                             collect($data)
                             ->mapWithKeys(fn ($value, $key) => [Str::after($key, FormsConst::JENAZAH) => $value])
                             ->all()
-                        )->getKey()
-                    ),
+                        )->getKey(),
+                        function ($state, $set) {
+                            $jenazah = \App\Models\Jenazah::where('warga_id', $state)->first();
+                            if ($jenazah) {
+                                $set('anak_ke', $jenazah->anak_ke);
+                                $set('tanggal_kematian', $jenazah->tanggal_kematian);
+                                $set('pukul_kematian', $jenazah->pukul_kematian);
+                                $set('sebab_kematian', $jenazah->sebab_kematian);
+                                $set('tempat_kematian', $jenazah->tempat_kematian);
+                                $set('yang_menerangkan', $jenazah->yang_menerangkan);
+                            } else {
+                                // Optionally clear fields if no Jenazah found
+                                $set('anak_ke', null);
+                                $set('tanggal_kematian', null);
+                                $set('pukul_kematian', null);
+                                $set('sebab_kematian', null);
+                                $set('tempat_kematian', null);
+                                $set('yang_menerangkan', null);
+                            }
+                        }
+                    )
+                    ->afterStateUpdated(function ($state, $set) {
+                        $jenazah = \App\Models\Jenazah::where('warga_id', $state)->first();
+                        if ($jenazah) {
+                            $set('anak_ke', $jenazah->anak_ke);
+                            $set('tanggal_kematian', $jenazah->tanggal_kematian);
+                            $set('pukul_kematian', $jenazah->pukul_kematian);
+                            $set('sebab_kematian', $jenazah->sebab_kematian);
+                            $set('tempat_kematian', $jenazah->tempat_kematian);
+                            $set('yang_menerangkan', $jenazah->yang_menerangkan);
+                        } else {
+                            // Optionally clear fields if no Jenazah found
+                            $set('anak_ke', null);
+                            $set('tanggal_kematian', null);
+                            $set('pukul_kematian', null);
+                            $set('sebab_kematian', null);
+                            $set('tempat_kematian', null);
+                            $set('yang_menerangkan', null);
+                        }
+                    }),
                     ...WargaForms::fieldsUnique(true, false, FormsConst::JENAZAH)
                 ]),
                 

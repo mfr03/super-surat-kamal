@@ -26,55 +26,15 @@ class SuratPengantarResource extends Resource
 {
     protected static ?string $model = SuratPengantar::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+    
+    protected static ?string $navigationGroup = 'Jenis Surat';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
 
-                Forms\Components\Section::make('Data Surat')
-                    ->collapsible()
-                    ->schema([
-
-                        Forms\Components\Select::make('kode_surat')
-                            ->label('Pilih Kode Surat')
-                            ->options(
-                                \App\Models\KodeSurat::query()
-                                    ->get()
-                                    ->mapWithKeys(function ($item) {
-                                    return [$item->id => "{$item->kode}: {$item->detail}"]; 
-                                    })
-                                )
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-                        
-                        Forms\Components\TextInput::make('nomor')
-                            ->label('Nomor')
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-
-                        Forms\Components\TextInput::make('nomor_surat')
-                            ->label('Nomor Surat')
-                            ->required()
-                            ->disabled(true),
-
-                        Forms\Components\Select::make('jabatan_ttd')
-                            ->label('Pilih Jabatan TTD')
-                            ->columnSpanFull()
-                            ->options([
-                                'kepala_desa' => 'Kepala Desa Kamal',
-                                'sekdes' => 'Sekretaris Desa',
-                                'kaur_tu' => 'Kaur TU',
-                            ])
-                            ->required(),
-
-                    ]),
+                CustomComponents::sectionDataSurat(SuratPengantar::class),
 
                 Forms\Components\Section::make('Pemohon Surat')
                     ->collapsible()
@@ -118,30 +78,33 @@ class SuratPengantarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_surat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jabatan_ttd')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('warga.id')
-                    ->numeric()
+                    ->label('Nomor Surat')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('kartu_keluarga')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('warga.nama')
+                    ->label('Nama Pemohon')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('keperluan')
-                    ->searchable(),
+                    ->label('Keperluan')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tujuan')
-                    ->searchable(),
+                    ->label('Tujuan')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('berlaku_mulai')
-                    ->searchable(),
+                    ->label('Berlaku Mulai')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('keterangan')
-                    ->searchable(),
+                    ->label('Keterangan')
+                    ->limit(30)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
                 //

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('warga_id');
             $table->foreign('warga_id')->references('id')->on(DbConst::WARGA);
             $table->string('anak_ke');
-            $table->time('tanggal_kematian');
+            $table->date('tanggal_kematian');
             $table->time('pukul_kematian');
             $table->string('sebab_kematian');
             $table->string('tempat_kematian');

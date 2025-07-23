@@ -24,6 +24,8 @@ class SuratKelahiran extends Model
         'saksi_dua_id'
     ];
 
+    
+
     public function kodeSurat(): BelongsTo
     {
         return $this->belongsTo(KodeSurat::class, 'kode_surat_id');

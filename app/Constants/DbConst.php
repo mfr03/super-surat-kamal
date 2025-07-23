@@ -10,6 +10,7 @@ class DbConst
     public const JENAZAH = 'jenazah';
     public const BAYI = 'bayi';
     public const SURAT = 'surat';
+    public const PEJABAT = 'pejabat';
     public const JENIS_SURAT = 'jenis_surat';
     public const SURAT_KELAHIRAN = 'surat_kelahiran';
     public const SURAT_PENGANTAR = 'surat_pengantar';

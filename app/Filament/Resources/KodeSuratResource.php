@@ -20,7 +20,10 @@ class KodeSuratResource extends Resource
 {
     protected static ?string $model = KodeSurat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
+    protected static ?string $navigationGroup = 'Data Surat';
+
 
     public static function form(Form $form): Form
     {

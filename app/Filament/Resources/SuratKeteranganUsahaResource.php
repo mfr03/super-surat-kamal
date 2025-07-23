@@ -19,6 +19,7 @@ use App\Constants\FormsConst;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Common\CustomComponents;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 
@@ -26,55 +27,15 @@ class SuratKeteranganUsahaResource extends Resource
 {
     protected static ?string $model = SuratKeteranganUsaha::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+    protected static ?string $navigationGroup = 'Jenis Surat';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 
-                Forms\Components\Section::make('Data Surat')
-                    ->collapsible()
-                    ->schema([
-
-                        Forms\Components\Select::make('kode_surat')
-                            ->label('Pilih Kode Surat')
-                            ->options(
-                                KodeSurat::query()
-                                    ->get()
-                                    ->mapWithKeys(function ($item) {
-                                    return [$item->id => "{$item->kode}: {$item->detail}"]; 
-                                    })
-                                )
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-                        
-                        Forms\Components\TextInput::make('nomor')
-                            ->label('Nomor')
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-
-                        Forms\Components\TextInput::make('nomor_surat')
-                            ->label('Nomor Surat')
-                            ->required()
-                            ->disabled(true),
-
-                        Forms\Components\Select::make('jabatan_ttd')
-                            ->label('Pilih Jabatan TTD')
-                            ->columnSpanFull()
-                            ->options([
-                                'kepala_desa' => 'Kepala Desa Kamal',
-                                'sekdes' => 'Sekretaris Desa',
-                                'kaur_tu' => 'Kaur TU',
-                            ])
-                            ->required(),
-
-                    ]),
+                CustomComponents::sectionDataSurat(SuratKeteranganUsaha::class),
 
                 Forms\Components\Section::make('Pemohon Surat')
                     ->collapsible()
@@ -96,8 +57,22 @@ class SuratKeteranganUsahaResource extends Resource
                 Forms\Components\Section::make('Keterangan Surat')
                     ->collapsible()
                     ->schema([
+
+                        Forms\Components\Select::make('ibu_id')
+                            ->label('Nama Ibu')
+                            ->searchable()
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Warga::where('nama', 'like', "%{$search}%")
+                                    ->limit(10)
+                                    ->pluck('nama', 'id');
+                            })
+                            ->required(),
+
                         Forms\Components\TextInput::make('selama')
                             ->label('Selama ...')
+                            ->required(),
+                        Forms\Components\TextInput::make('nama_usaha')
+                            ->label('Nama Usaha')
                             ->required(),
                         Forms\Components\TextInput::make('tujuan_surat')
                             ->label('Tujuan Surat')
@@ -110,7 +85,28 @@ class SuratKeteranganUsahaResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nomor_surat')
+                    ->label('Nomor Surat')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('warga.nama')
+                    ->label('Nama Pemohon')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('tujuan_surat')
+                    ->label('Tujuan Surat')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('selama')
+                    ->label('Selama')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d/m/Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -139,5 +135,25 @@ class SuratKeteranganUsahaResource extends Resource
             'create' => Pages\CreateSuratKeteranganUsaha::route('/create'),
             'edit' => Pages\EditSuratKeteranganUsaha::route('/{record}/edit'),
         ];
+    }
+
+    public static function updateNomorSurat(Set $set, Get $get): void {
+
+        $kodeSuratId = $get('kode_surat');
+        $nomor = $get('nomor');
+
+        if (! $kodeSuratId || ! $nomor) {
+            $set('nomor_surat', null);
+            return;
+        }
+
+        $kodeSurat = KodeSurat::find($kodeSuratId)?->kode ?? '';
+        $monthRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][Carbon::now()->month];
+        $year = Carbon::now()->year;
+
+        $nomorSurat = "{$kodeSurat}/{$nomor}/{$monthRoman}/{$year}";
+
+        $set('nomor_surat', $nomorSurat);
+
     }
 }

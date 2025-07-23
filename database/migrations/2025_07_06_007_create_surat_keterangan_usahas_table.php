@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('jabatan_ttd');
             $table->unsignedBigInteger('warga_id');
             $table->foreign('warga_id')->references('id')->on(DbConst::WARGA);
+            $table->unsignedBigInteger('ibu_id');
+            $table->foreign('ibu_id')->references('id')->on(DbConst::WARGA);
+            $table->string('nama_usaha');
             $table->string('selama');
             $table->string('tujuan_surat');
             $table->timestamps();

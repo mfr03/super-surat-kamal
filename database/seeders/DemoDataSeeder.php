@@ -39,9 +39,29 @@ class DemoDataSeeder extends Seeder
             'kecamatan' => 'Kecamatan Sukabumi',
             'kabupaten' => 'Kabupaten Sukabumi',
             'provinsi' => 'Jawa Barat',
-            'kewarganegaraan' => 'Indonesia',
+            'kewarganegaraan' => 'WNA',
             'kebangsaan' => 'Indonesia',
             'tanggal_pencatatan_perkawinan' => '2015-08-17',
+        ]);
+        
+        // Create another Warga record
+        $warga2 = Warga::create([
+            'nik' => '9876543210987654',
+            'nama' => 'Siti Aminah',
+            'jenis_kelamin' => 'Perempuan',
+            'tanggal_lahir' => '1985-11-23',
+            'tempat_lahir' => 'Bandung',
+            'agama' => 'Islam',
+            'pekerjaan' => 'Guru',
+            'alamat' => 'Jl. Melati No. 5',
+            'kartu_keluarga' => '4444333322221111',
+            'desa-kelurahan' => 'Kelurahan Mekarwangi',
+            'kecamatan' => 'Kecamatan Cimahi',
+            'kabupaten' => 'Kabupaten Bandung',
+            'provinsi' => 'Jawa Barat',
+            'kewarganegaraan' => 'WNA',
+            'kebangsaan' => 'Indonesia',
+            'tanggal_pencatatan_perkawinan' => '2010-06-12',
         ]);
 
         // Create Bayi records
@@ -69,5 +89,8 @@ class DemoDataSeeder extends Seeder
             'tempat_kematian' => 'Rumah',
             'yang_menerangkan' => 'Dokter'
         ]);
+
+
+        
     }
 }

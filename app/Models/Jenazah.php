@@ -20,4 +20,9 @@ class Jenazah extends Model
     protected $casts = [
         'tanggal_kematian' => 'date',
     ];
+
+    public function warga()
+    {
+        return $this->belongsTo(\App\Models\Warga::class, 'warga_id');
+    }
 }
