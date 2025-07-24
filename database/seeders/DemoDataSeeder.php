@@ -8,6 +8,9 @@ use App\Models\Warga;
 use App\Models\Jenazah;
 use App\Models\KodeSurat;
 use Illuminate\Support\Carbon;
+use Faker\Factory as Faker;
+use App\Models\SuratKelahiran;
+use Illuminate\Support\Str;
 
 class DemoDataSeeder extends Seeder
 {
@@ -18,79 +21,98 @@ class DemoDataSeeder extends Seeder
             ['kode' => 'SKL', 'detail' => 'Surat Kelahiran'],
             ['kode' => 'SKM', 'detail' => 'Surat Kematian'],
             ['kode' => 'SKU', 'detail' => 'Surat Keterangan Usaha'],
+            ['kode' => 'SPI', 'detail' => 'Surat Pengantar Izin Perjamuan'],
+            ['kode' => 'SKP', 'detail' => 'Surat Pengantar Keterangan'],
         ];
+
+        $pejabat = [
+            ['jabatan' => 'Kepala Desa', 'nama' => 'Widodo', 'alamat' => 'Ngosong 2/3, Ds.Kamal, Kec. Bulu, Kab. Sukoharjo'],
+            ['jabatan' => 'Sekretaris Desa', 'nama' => 'Suwandi', 'alamat' => 'Ngosong 2/4, Ds.Kamal, Kec. Bulu, Kab. Sukoharjo'],
+            ['jabatan' => 'Kaur TU', 'nama' => 'Subandi', 'alamat' => 'Ngosong 2/5, Ds.Kamal, Kec. Bulu, Kab. Sukoharjo'],
+        ];
+
+        foreach ($pejabat as $data) {
+            \App\Models\Pejabat::create($data);
+        }
 
         foreach ($kodeSurats as $data) {
             KodeSurat::create($data);
         }
 
-        // Create Warga records
-        $warga = Warga::create([
-            'nik' => '1234567890123456',
-            'nama' => 'Budi Santoso',
-            'jenis_kelamin' => 'Laki-laki',
-            'tanggal_lahir' => '1990-05-12',
-            'tempat_lahir' => 'Jakarta',
-            'agama' => 'Islam',
-            'pekerjaan' => 'Petani',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'kartu_keluarga' => '1111222233334444',
-            'desa-kelurahan' => 'Kelurahan Sukamaju',
-            'kecamatan' => 'Kecamatan Sukabumi',
-            'kabupaten' => 'Kabupaten Sukabumi',
-            'provinsi' => 'Jawa Barat',
-            'kewarganegaraan' => 'WNA',
-            'kebangsaan' => 'Indonesia',
-            'tanggal_pencatatan_perkawinan' => '2015-08-17',
-        ]);
-        
-        // Create another Warga record
-        $warga2 = Warga::create([
-            'nik' => '9876543210987654',
-            'nama' => 'Siti Aminah',
-            'jenis_kelamin' => 'Perempuan',
-            'tanggal_lahir' => '1985-11-23',
-            'tempat_lahir' => 'Bandung',
-            'agama' => 'Islam',
-            'pekerjaan' => 'Guru',
-            'alamat' => 'Jl. Melati No. 5',
-            'kartu_keluarga' => '4444333322221111',
-            'desa-kelurahan' => 'Kelurahan Mekarwangi',
-            'kecamatan' => 'Kecamatan Cimahi',
-            'kabupaten' => 'Kabupaten Bandung',
-            'provinsi' => 'Jawa Barat',
-            'kewarganegaraan' => 'WNA',
-            'kebangsaan' => 'Indonesia',
-            'tanggal_pencatatan_perkawinan' => '2010-06-12',
-        ]);
+        $faker = Faker::create('id_ID');
 
-        // Create Bayi records
-        Bayi::create([
-            'nama' => 'Ani Setiawati',
-            'jenis_kelamin' => 'Perempuan',
-            'tempat_dilahirkan' => 'Rumah Sakit',
-            'tempat_kelahiran' => 'Bandung',
-            'tanggal_lahir' => Carbon::now()->subDays(30),
-            'pukul_lahir' => '07:30',
-            'jenis_kelahiran' => 'Tunggal',
-            'kelahiran_ke' => 1,
-            'penolong_kelahiran' => 'Bidan',
-            'berat_bayi' => 3.2,
-            'panjang_bayi' => 49.5
-        ]);
+        // --- WARGA ---
+        for ($i = 0; $i < 20; $i++) {
+            Warga::create([
+                'nik' => $faker->unique()->numerify('################'),
+                'nama' => $faker->name,
+                'jenis_kelamin' => $faker->randomElement(['Laki-laki', 'Perempuan']),
+                'tanggal_lahir' => $faker->date('Y-m-d', '-18 years'),
+                'tempat_lahir' => $faker->city,
+                'agama' => $faker->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']),
+                'pekerjaan' => $faker->jobTitle,
+                'alamat' => $faker->address,
+                'nomor_hp' => $faker->phoneNumber,
+                'kartu_keluarga' => $faker->numerify('################'),
+                'desa-kelurahan' => $faker->citySuffix,
+                'kecamatan' => $faker->city,
+                'kabupaten' => $faker->city,
+                'provinsi' => $faker->state,
+                'kewarganegaraan' => $faker->randomElement(['WNI', 'WNA']),
+                'kebangsaan' => 'Indonesia',
+                'tanggal_pencatatan_perkawinan' => $faker->optional()->date('Y-m-d', '-1 years'),
+            ]);
+        }
 
-        // Create Jenazah record for the same warga
-        Jenazah::create([
-            'warga_id' => $warga->id,
-            'anak_ke' => 2,
-            'tanggal_kematian' => Carbon::now()->subDays(5),
-            'pukul_kematian' => '14:00',
-            'sebab_kematian' => 'Sakit',
-            'tempat_kematian' => 'Rumah',
-            'yang_menerangkan' => 'Dokter'
-        ]);
+        // --- BAYI ---
+        for ($i = 0; $i < 20; $i++) {
+            Bayi::create([
+                'nama' => $faker->firstName . ' ' . $faker->lastName,
+                'jenis_kelamin' => $faker->randomElement(['Laki-laki', 'Perempuan']),
+                'tempat_dilahirkan' => $faker->randomElement(['Rumah Sakit', 'Puskesmas', 'Rumah Bersalin', 'Rumah']),
+                'tempat_kelahiran' => $faker->city,
+                'tanggal_lahir' => $faker->date('Y-m-d', 'now'),
+                'pukul_lahir' => $faker->time('H:i'),
+                'jenis_kelahiran' => $faker->randomElement(['Tunggal', 'Kembar 2', 'Kembar 3']),
+                'kelahiran_ke' => $faker->numberBetween(1, 5),
+                'penolong_kelahiran' => $faker->randomElement(['Bidan', 'Dokter', 'Dukun', 'Lainnya']),
+                'berat_bayi' => $faker->randomFloat(2, 2.0, 5.0),
+                'panjang_bayi' => $faker->randomFloat(1, 45, 60),
+            ]);
+        }
+
+        $wargaIds = Warga::pluck('id')->toArray();
+
+        for ($i = 0; $i < 5; $i++) {
+            Jenazah::create([
+                'warga_id' => $faker->randomElement($wargaIds),
+                'anak_ke' => $faker->numberBetween(1, 5),
+                'tanggal_kematian' => $faker->date('Y-m-d', 'now'),
+                'pukul_kematian' => $faker->time('H:i'),
+                'sebab_kematian' => $faker->randomElement(['Sakit', 'Kecelakaan', 'Tua', 'Lainnya']),
+                'tempat_kematian' => $faker->city,
+                'yang_menerangkan' => $faker->randomElement(['Dokter', 'Bidan', 'Kepala Desa', 'Lainnya']),
+            ]);
 
 
-        
+        $wargas = Warga::pluck('id')->toArray();
+        $bayis = Bayi::pluck('id')->toArray();
+
+            for ($i = 0; $i < 10; $i++) {
+                SuratKelahiran::create([
+                    'kode_wilayah' => $faker->postcode,
+                    'nomor_surat' => 'SKL/' . Str::upper(Str::random(3)) . '/' . ($i+1) . '/' . date('Y'),
+                    'jabatan_ttd' => $faker->randomElement(['Kepala Desa', 'Sekretaris Desa', 'Kaur TU']),
+                    'nama_kepala_keluarga' => $faker->name,
+                    'nomor_kepala_keluarga' => $faker->numerify('###############'),
+                    'bayi_id' => $faker->randomElement($bayis),
+                    'ibu_id' => $faker->randomElement($wargas),
+                    'ayah_id' => $faker->randomElement($wargas),
+                    'pelapor_id' => $faker->randomElement($wargas),
+                    'saksi_satu_id' => $faker->randomElement($wargas),
+                    'saksi_dua_id' => $faker->randomElement($wargas),
+                ]);
+            }
+        } 
     }
 }

@@ -146,6 +146,37 @@ class SuratPengantarIzinPerjamuanResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_by_month')
+                    ->label('Ekspor Surat Kelahiran Bulanan')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->form([
+                        Forms\Components\DatePicker::make('month')
+                            ->label('Bulan')
+                            ->required()
+                            ->displayFormat('F Y')
+                            ->format('Y-m')
+                            ->maxDate(now())
+                            ->default(now())
+                            ->native(false)
+                            ->closeOnDateSelection(true)
+                            ->extraAttributes([
+                                'autocomplete' => 'off',
+                                'data-type' => 'month',
+                                'onfocus' => "this.type='month'",
+                                'onblur' => "this.type='text'",
+                            ]),
+                    ])
+                    ->action(function (array $data) {
+                        $month = Carbon::parse($data['month'])->month;
+                        $year = Carbon::parse($data['month'])->year;
+
+                        return redirect()->route('export.by-month-pengantar-izin-perjamuan', [
+                            'month' => $month,
+                            'year' => $year,
+                        ]);
+                    })
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

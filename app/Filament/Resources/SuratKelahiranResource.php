@@ -21,6 +21,8 @@ use App\Common\CustomComponents;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SuratKelahiranExport;
 
 
 class SuratKelahiranResource extends Resource
@@ -37,7 +39,12 @@ class SuratKelahiranResource extends Resource
         return $form
             ->schema([
 
-                CustomComponents::sectionDataSurat(SuratKelahiran::class),
+                CustomComponents::sectionDataSurat(SuratKelahiran::class,
+            Forms\Components\TextInput::make('kode_wilayah')
+                ->label('Kode Wilayah')
+                ->required()
+                ->maxLength(255)
+            ),
 
 
                 Forms\Components\Section::make('Data Kepala Keluarga')
@@ -210,6 +217,39 @@ class SuratKelahiranResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_by_month')
+                    ->label('Ekspor Surat Kelahiran Bulanan')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->form([
+                        Forms\Components\DatePicker::make('month')
+                            ->label('Bulan')
+                            ->required()
+                            ->displayFormat('F Y')
+                            ->format('Y-m')
+                            ->maxDate(now())
+                            ->default(now())
+                            ->native(false)
+                            ->closeOnDateSelection(true)
+                            ->extraAttributes([
+                                'autocomplete' => 'off',
+                                'data-type' => 'month',
+                                'onfocus' => "this.type='month'",
+                                'onblur' => "this.type='text'",
+                            ]),
+                    ])
+                ->action(function (array $data) {
+                    $month = \Carbon\Carbon::parse($data['month'])->month;
+                    $year = \Carbon\Carbon::parse($data['month'])->year;
+
+                    // Return a redirect response
+                    return redirect()->route('export.by-month-kelahiran', [
+                        'month' => $month,
+                        'year' => $year,
+                    ]);
+                })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

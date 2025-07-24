@@ -6,6 +6,7 @@ use App\Filament\Resources\SuratKematianResource\Pages;
 use App\Filament\Resources\SuratKematianResource\RelationManagers;
 use App\Models\SuratKematian;
 use App\Models\SuratKelahiran;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,8 +37,12 @@ class SuratKematianResource extends Resource
         return $form
             ->schema([
                 
-                CustomComponents::sectionDataSurat(SuratKematian::class),
-
+                CustomComponents::sectionDataSurat(SuratKelahiran::class,
+            Forms\Components\TextInput::make('kode_wilayah')
+                ->label('Kode Wilayah')
+                ->required()
+                ->maxLength(255)
+            ),
                 Forms\Components\Section::make('Data Kepala Keluarga')
                     ->collapsible()
                     ->schema([
@@ -193,6 +198,37 @@ class SuratKematianResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_by_month')
+                    ->label('Ekspor Surat Kematian Bulanan')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->form([
+                        Forms\Components\DatePicker::make('month')
+                            ->label('Bulan')
+                            ->required()
+                            ->displayFormat('F Y')
+                            ->format('Y-m')
+                            ->maxDate(now())
+                            ->default(now())
+                            ->native(false)
+                            ->closeOnDateSelection(true)
+                            ->extraAttributes([
+                                'autocomplete' => 'off',
+                                'data-type' => 'month',
+                                'onfocus' => "this.type='month'",
+                                'onblur' => "this.type='text'",
+                            ]),
+                    ])
+                    ->action(function (array $data) {
+                        $month = Carbon::parse($data['month'])->month;
+                        $year = Carbon::parse($data['month'])->year;
+
+                        return redirect()->route('export.by-month-kematian', [
+                            'month' => $month,
+                            'year' => $year
+                        ]);
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

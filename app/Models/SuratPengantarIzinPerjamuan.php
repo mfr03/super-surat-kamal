@@ -11,7 +11,6 @@ class SuratPengantarIzinPerjamuan extends Model
     protected $table = DbConst::SURAT_PENGANTAR_IZIN_PERJAMUAN;
     
     protected $fillable = [
-        'kode_surat',
         'nomor_surat',
         'jabatan_ttd',
         'warga_id',

@@ -11,7 +11,6 @@ class SuratPengantar extends Model
     protected $table = DbConst::SURAT_PENGANTAR;
     
     protected $fillable = [
-        'kode_surat',
         'nomor_surat',
         'jabatan_ttd',
         'warga_id',

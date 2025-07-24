@@ -11,7 +11,7 @@ class SuratKematian extends Model
     protected $table = DbConst::SURAT_KEMATIAN;
     
     protected $fillable = [
-        'kode_surat_id',
+        'kode_wilayah',
         'nomor_surat',
         'jabatan_ttd',
         'nama_kepala_keluarga',

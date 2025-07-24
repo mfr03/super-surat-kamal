@@ -18,7 +18,7 @@ class PejabatResource extends Resource
 {
     protected static ?string $model = Pejabat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Data Master';
 
     public static function form(Form $form): Form

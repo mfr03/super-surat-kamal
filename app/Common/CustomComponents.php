@@ -71,7 +71,7 @@ class CustomComponents
             ->required();
     }
 
-    public static function sectionDataSurat(string $modelClass): Section
+    public static function sectionDataSurat(string $modelClass, ?TextInput $extraInput = null): Section
     {
         return Section::make('Data Surat')
                     ->collapsible()
@@ -90,11 +90,12 @@ class CustomComponents
                             ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
                                 self::updateNomorSurat($set, $get);
                             })
-                            ->dehydrated(false),
-                        
+                            ->dehydrated(false)
+                            ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+
                         TextInput::make('nomor')
                             ->label('Nomor')
-                            ->required()
+                            ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
                             ->reactive()
                             ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
                                 self::updateNomorSurat($set, $get);
@@ -112,7 +113,10 @@ class CustomComponents
                             ->columnSpanFull()
                             ->options(\App\Models\Pejabat::pluck('jabatan', 'jabatan')->toArray())
                             ->required(),
-
+                        
+                        $extraInput ?: TextInput::make('dummy')
+                            ->disabled()
+                            ->visible(false)
              ]);
     }
 

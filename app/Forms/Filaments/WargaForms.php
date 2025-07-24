@@ -55,7 +55,8 @@ class WargaForms
                     Forms\Components\TextInput::make($prefix.'umur')
                         ->label('Umur')
                         ->numeric()
-                        ->disabled(true), 
+                        ->disabled(true)
+                        ->reactive(),
                 ]),
 
                 Forms\Components\TextInput::make($prefix .'tempat_lahir')
@@ -165,7 +166,8 @@ class WargaForms
                     Forms\Components\TextInput::make($prefix.'umur')
                         ->label('Umur')
                         ->numeric()
-                        ->disabled(true), 
+                        ->disabled(true)
+                        ->reactive(),
                 ]),
 
                 Forms\Components\TextInput::make($prefix.'tempat_lahir')

@@ -11,7 +11,6 @@ class SuratKeteranganUsaha extends Model
     protected $table = DbConst::SURAT_KETERANGAN_USAHA;
     
     protected $fillable = [
-        'kode_surat',
         'nomor_surat',
         'jabatan_ttd',
         'warga_id',

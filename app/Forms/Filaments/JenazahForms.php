@@ -20,7 +20,7 @@ class JenazahForms
                 ->collapsible()
                 ->schema([
                     CustomComponents::searchSelect(
-                        'jenazah_id', 'Nama Jenazah',
+                        'warga_id', 'Nama Jenazah',
                         'nama', 'Masukkan Nama Jenazah',
                         Warga::class, WargaForms::fieldMap(FormsConst::JENAZAH),
                         fn () => WargaForms::fields(false, FormsConst::JENAZAH),
@@ -110,29 +110,38 @@ class JenazahForms
     public static function table(): array
     {
         return [
-                Tables\Columns\TextColumn::make('warga_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('anak_ke')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_kematian')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pukul_kematian')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('sebab_kematian')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tempat_kematian')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('yang_menerangkan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('warga.nama')
+                ->label('Nama Jenazah')
+                ->searchable()
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('anak_ke')
+                ->label('Anak Ke')
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('tanggal_kematian')
+                ->label('Tanggal Kematian')
+                ->date('d F Y')
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('pukul_kematian')
+                ->label('Pukul Kematian')
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('sebab_kematian')
+                ->label('Sebab Kematian')
+                ->limit(30)
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('tempat_kematian')
+                ->label('Tempat Kematian')
+                ->limit(30)
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('yang_menerangkan')
+                ->label('Yang Menerangkan')
+                ->limit(30)
+                ->sortable(),
         ];
     }
 }

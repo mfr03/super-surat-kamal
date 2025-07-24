@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create(DbConst::SURAT_KEMATIAN, function (Blueprint $table) {
             $table->id();
             $table->string('nomor_surat');
+            $table->string('kode_wilayah');
             $table->string('jabatan_ttd');
             $table->string('nama_kepala_keluarga');
             $table->string('nomor_kepala_keluarga');
