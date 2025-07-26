@@ -13,6 +13,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
+
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class PejabatResource extends Resource
 {
@@ -63,4 +67,16 @@ class PejabatResource extends Resource
             'edit' => Pages\EditPejabat::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && auth()->user()?->hasRole('admin');
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->check() && auth()->user()?->hasRole('admin');
+    }
+
+
 }

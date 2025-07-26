@@ -67,4 +67,9 @@ class KodeSuratResource extends Resource
             'edit' => Pages\EditKodeSurat::route('/{record}/edit'),
         ];
     }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
 }

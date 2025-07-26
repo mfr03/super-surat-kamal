@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Resources\SuratKelahiranResource\Widgets\StatsSuratKelahiran;
 use App\Filament\Resources\SuratKematianResource\Widgets\StatsSuratKematian;
 use App\Filament\Resources\SuratKeteranganUsahaResource\Widgets\StatsSuratKeteranganUsaha;
@@ -24,6 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -59,6 +61,17 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                BreezyCore::make()
+                    ->myProfile(
+                    shouldRegisterUserMenu: true,
+                    userMenuLabel: 'My Profile',
+                    shouldRegisterNavigation: false, 
+                    navigationGroup: 'Settings',
+                    hasAvatars: false, 
+                    slug: 'my-profile'
+                )
             ])
             ->authMiddleware([
                 Authenticate::class,
