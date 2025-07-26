@@ -21,6 +21,8 @@ use Filament\Forms\Set;
 use App\Common\CustomComponents;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Models\Pejabat;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratPengantarIzinPerjamuanResource extends Resource
 {
@@ -120,7 +122,7 @@ class SuratPengantarIzinPerjamuanResource extends Resource
                     ->limit(30)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('hari_tanggal')
+                Tables\Columns\TextColumn::make('hari-tanggal')
                     ->label('Hari & Tanggal')
                     ->limit(30)
                     ->searchable(),
@@ -145,6 +147,46 @@ class SuratPengantarIzinPerjamuanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Export PDF')
+                ->label('Export PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action((function ($record) {
+                    $pemohon = $record->warga;
+                    $pejabat = Pejabat::where('jabatan', $record->jabatan_ttd)->first();
+                    $data = [
+                        'nomor' => $record->nomor_surat ?? '',
+                        'nama_pemohon' => $pemohon->nama ?? '',
+                        'nama_pejabat' => $pejabat->nama ?? '',
+                        'jabatan' => $record->jabatan_ttd ?? '',
+                        'nama' => $pemohon->nama ?? '',
+                        'jenis_kelamin' => $pemohon->jenis_kelamin ?? '',
+                        'agama' => $pemohon->agama ?? '',
+                        'nik' => $pemohon->nik ?? '',
+                        'tempat_tanggal_lahir' => $pemohon->tempat_lahir . ', ' . Carbon::parse($pemohon->tanggal_lahir)->format('Y-m-d') ?? '',
+                        'pekerjaan' => $pemohon->pekerjaan ?? '',
+                        'alamat' => $pemohon->alamat ?? '',
+                        'keperluan' => $record->keperluan ?? '',
+                        'undangan' => $record->undangan ?? '',
+                        'jenis_pertunjukan' => $record->jenis_pertunjukan ?? '',
+                        'hari_tanggal' => $record->{'hari-tanggal'} ?? '',
+                        'tanggal' => Carbon::parse(Carbon::now())->locale('id')->translatedFormat('d F Y'), 
+                        'berlaku_mulai_tanggal' => $record->berlaku_mulai ?? '',
+                        'keterangan_lain' => $record->keterangan_lain_lain ?? '',
+                    ];
+
+                    $data = array_map(function ($value) {
+                        if (is_string($value)) {
+                            $value = str_replace("\0", '', $value);
+                            $value = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $value);
+                            $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                        }
+                        return $value;
+                    }, $data);
+
+                    return response()->streamDownload(function () use ($data) {
+                        echo Pdf::loadView('surat.pengantar-izin-perjamuan', $data)->output();
+                    }, 'surat-pengantar-izin-perjamuan-' . ($pemohon->nama ?? 'pemohon') . '.pdf');
+                })),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export_by_month')

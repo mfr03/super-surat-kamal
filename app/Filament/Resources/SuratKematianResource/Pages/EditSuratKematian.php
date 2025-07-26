@@ -55,7 +55,7 @@ class EditSuratKematian extends EditRecord
 
         $data = [
             // Surat & Kepala Keluarga
-            'kode_wilayah' => '...', // Fill as needed
+            'kode_wilayah' => $record->kode_wilayah,
             'nomor_surat' => $record->nomor_surat,
             'nama_kepala_keluarga' => $record->nama_kepala_keluarga,
             'nomor_kepala_keluarga' => $record->nomor_kepala_keluarga,

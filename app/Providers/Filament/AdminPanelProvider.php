@@ -43,7 +43,6 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->widgets([
-                ExportAllByMonthAction::class,
                 StatsSuratKelahiran::class,
                 StatsSuratKematian::class,
                 StatsSuratPengantar::class,

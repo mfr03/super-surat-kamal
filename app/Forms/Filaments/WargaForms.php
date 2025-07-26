@@ -107,7 +107,7 @@ class WargaForms
                     ->required(),
 
                 Forms\Components\Select::make($prefix.'kewarganegaraan')
-                    ->label('kewarganegaraan')
+                    ->label('Kewarganegaraan')
                     ->options([
                         'WNI' => 'WNI',
                         'WNA' => 'WNA',

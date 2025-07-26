@@ -48,7 +48,7 @@ class EditSuratKelahiran extends EditRecord
 
         $data = [
             // Data Surat
-            'kode_wilayah' => '...', // Fill this as needed
+            'kode_wilayah' => $record->kode_wilayah,
             'nomor_surat' => $record->nomor_surat,
             'nama_kepala_keluarga' => $record->nama_kepala_keluarga,
             'nomor_kepala_keluarga' => $record->nomor_kepala_keluarga,
@@ -127,12 +127,6 @@ class EditSuratKelahiran extends EditRecord
             'nama_pejabat' => $pejabat->nama ?? '',
             'tanggal' => now()->translatedFormat('j F Y'),
         ];
-
-        foreach ($data as $key => $value) {
-            if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
-                Log::error("Invalid UTF-8 in $key: " . bin2hex($value));
-            }
-        }
 
         // Sanitize all string values
         $data = array_map(function ($value) {
