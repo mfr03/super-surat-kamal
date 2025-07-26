@@ -2,12 +2,20 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\SuratKelahiranResource\Widgets\StatsSuratKelahiran;
+use App\Filament\Resources\SuratKematianResource\Widgets\StatsSuratKematian;
+use App\Filament\Resources\SuratKeteranganUsahaResource\Widgets\StatsSuratKeteranganUsaha;
+use App\Filament\Resources\SuratPengantarIzinPerjamuanResource\Widgets\StatsSuratPengantarIzinPerjamuan;    
+use App\Filament\Resources\SuratPengantarResource\Widgets\StatsSuratPengantar;
 use Filament\Facades\Filament;
+use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets\Widget;
 use Filament\Widgets\WidgetConfiguration;
 use Illuminate\Contracts\Support\Htmlable;
+use Filament\Forms;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class Dashboard extends Page
 {
@@ -34,7 +42,13 @@ class Dashboard extends Page
      */
     public function getWidgets(): array
     {
-        return Filament::getWidgets();
+        return [
+            StatsSuratKelahiran::class,
+            StatsSuratKematian::class,
+            StatsSuratPengantar::class,
+            StatsSuratKeteranganUsaha::class,
+            StatsSuratPengantarIzinPerjamuan::class,    
+        ];
     }
 
     /**
@@ -57,4 +71,5 @@ class Dashboard extends Page
     {
         return static::$title ?? __('filament-panels::pages/dashboard.title');
     }
+
 }

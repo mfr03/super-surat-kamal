@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\ExportAllPage;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Resources\SuratKelahiranResource\Widgets\StatsSuratKelahiran;
 use App\Filament\Resources\SuratKematianResource\Widgets\StatsSuratKematian;
@@ -10,6 +11,7 @@ use App\Filament\Resources\SuratKeteranganUsahaResource\Widgets\StatsSuratKetera
 use App\Filament\Resources\SuratPengantarIzinPerjamuanResource\Widgets\StatsSuratPengantarIzinPerjamuan;
 use App\Filament\Resources\SuratPengantarResource\Widgets\StatsSuratPengantar;
 use App\Filament\Widgets\ExportAllByMonthAction;
+use App\Filament\Widgets\ExportAllWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -34,22 +36,20 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('')
+            ->brandName('Sistem Surat Desa Kamal v.2.0')
+            ->favicon(asset('logo-skh.png'))
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Sky,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
+                ExportAllPage::class,
             ])
             ->widgets([
-                StatsSuratKelahiran::class,
-                StatsSuratKematian::class,
-                StatsSuratPengantar::class,
-                StatsSuratKeteranganUsaha::class,
-                StatsSuratPengantarIzinPerjamuan::class,
             ])
             ->middleware([
                 EncryptCookies::class,
