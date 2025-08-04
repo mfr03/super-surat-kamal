@@ -15,7 +15,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class WargaResource extends Resource
-{
+{   
+    protected static array $excludeTitleCasedFields = [
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'pekerjaan',
+        'alamat',
+        'kartu_keluarga',
+        'desa-kelurahan',
+        'nomor_hp',
+        'kewarganegaraan',
+        'tanggal_pencatatan_perkawinan',
+    ];
     protected static ?string $model = Warga::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
@@ -25,7 +36,7 @@ class WargaResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(WargaForms::form());
+            ->schema(WargaForms::form(true));
     }
 
     public static function table(Table $table): Table

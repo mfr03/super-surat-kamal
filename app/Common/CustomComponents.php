@@ -31,11 +31,28 @@ class CustomComponents
             ->reactive()
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $searchColumn) {
+
+                if ($modelClass === \App\Models\Jenazah::class && $searchColumn === 'warga.nama') {
+                    $wargaTable = (new \App\Models\Warga)->getTable();
+                    $jenazahTable = (new \App\Models\Jenazah)->getTable();
+
+                    return $modelClass::query()
+                        ->join($wargaTable, "{$jenazahTable}.warga_id", '=', "{$wargaTable}.id")
+                        ->where("{$wargaTable}.nama", 'like', "%{$search}%")
+                        ->limit(10)
+                        ->pluck("{$wargaTable}.nama", "{$jenazahTable}.id");
+                }
                 return $modelClass::where($searchColumn, 'like', "%{$search}%")
                     ->limit(10)
                     ->pluck($searchColumn, 'id');
             })
             ->getOptionLabelUsing(function ($value) use ($modelClass, $searchColumn): ?string {
+
+                if ($modelClass === \App\Models\Jenazah::class && $searchColumn === 'warga.nama') {
+                    $jenazah = $modelClass::with('warga')->find($value);
+                    return $jenazah?->warga?->nama;
+                }
+
                 return $modelClass::find($value)?->$searchColumn;
             })
             ->afterStateUpdated(function ($state, callable $set) use ($modelClass, $autofillFields) {
@@ -93,18 +110,9 @@ class CustomComponents
                             ->dehydrated(false)
                             ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
 
-                        TextInput::make('nomor')
-                            ->label('Nomor')
-                            ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
-                            ->reactive()
-                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
-                                self::updateNomorSurat($set, $get);
-                            }),
-
                         TextInput::make('nomor_surat')
                             ->label('Nomor Surat')
                             ->required()
-                            ->readOnly()
                             ->placeholder('474.1/xxx/mm/yyyy')
                             ->hint('Nomor surat terakhir: ' . $modelClass::latest('created_at')->value('nomor_surat')),
 
@@ -123,20 +131,10 @@ class CustomComponents
     public static function updateNomorSurat(Set $set, Get $get): void {
 
         $kodeSuratId = $get('kode_surat');
-        $nomor = $get('nomor');
-
-        if (! $kodeSuratId || ! $nomor) {
-            $set('nomor_surat', null);
-            return;
-        }
 
         $kodeSurat = \App\Models\KodeSurat::find($kodeSuratId)?->kode ?? '';
-        $monthRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][Carbon::now()->month];
-        $year = Carbon::now()->year;
 
-        $nomorSurat = "{$kodeSurat}/{$nomor}/{$monthRoman}/{$year}";
-
-        $set('nomor_surat', $nomorSurat);
+        $set('nomor_surat', $kodeSurat);
 
     }
     

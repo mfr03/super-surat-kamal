@@ -19,7 +19,11 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 class PejabatResource extends Resource
-{
+{   
+    protected static array $excludedTitleCasedFields = [
+        'alamat',
+    ];
+
     protected static ?string $model = Pejabat::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';

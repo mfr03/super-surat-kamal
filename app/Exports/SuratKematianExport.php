@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Jenazah;
+use App\Models\Warga;
 use App\Models\SuratKematian;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
@@ -24,29 +25,22 @@ class SuratKematianExport implements FromCollection, WithHeadings, WithColumnFor
         $this->year = $year;
     }
 
-
-
-
     public function collection()
     {
         return SuratKematian::whereMonth('created_at', $this->month)
             ->whereYear('created_at', $this->year)
             ->get([
-                'nomor_surat',
-                'nama_kepala_keluarga',
-                'nomor_kepala_keluarga',
-                'nama_jenazah',
-                'tanggal_kematian',
-                'created_at'
+                'jenazah_id',
             ])->map(function ($item) {
                 $jenazah = Jenazah::find($item->jenazah_id);
+                $warga = Warga::find($jenazah->warga_id);
                 return [
-                    'Nomor Surat' => $item->nomor_surat,
-                    'Nama Kepala Keluarga' => $item->nama_kepala_keluarga,
-                    'Nomor Kepala Keluarga' => $item->nomor_kepala_keluarga,
-                    'Nama Jenazah' => $jenazah ? $jenazah->nama : 'Tidak Diketahui',
+                    'Nama' => $warga ? $warga->nama : 'Tidak Diketahui',
+                    'NIK' => $warga ? $warga->nik : 'Tidak Diketahui',
+                    'Umur' => $warga ? $warga->tanggal_lahir->diffInYears(now()) : 'Tidak Diketahui',
                     'Tanggal Kematian' => $jenazah ? Date::dateTimeToExcel($jenazah->tanggal_kematian) : 'Tidak Diketahui',
-                    'Tanggal Dibuat' => Date::dateTimeToExcel($item->created_at),
+                    'Alamat' => $warga ? $warga->alamat : 'Tidak Diketahui',
+                    'Keterangan' => $jenazah->sebab_kematian ?? 'Tidak Diketahui',
                 ];
             });
     }
@@ -54,36 +48,37 @@ class SuratKematianExport implements FromCollection, WithHeadings, WithColumnFor
     public function headings(): array
     {
         return [
-            'Nomor Surat',
-            'Nama Kepala Keluarga',
-            'Nomor Kepala Keluarga',
-            'Nama Jenazah',
+            'Nama',
+            'NIK',
+            'Umur',
             'Tanggal Kematian',
-            'Tanggal Dibuat',
+            'Alamat',
+            'Keterangan',
         ];
     }
 
     public function columnFormats(): array
     {
         return [
-            'A' => NumberFormat::FORMAT_TEXT, // Nomor Surat
-            'B' => NumberFormat::FORMAT_TEXT, // Nama Kepala Keluarga
-            'C' => NumberFormat::FORMAT_NUMBER, // Nomor Kepala Keluarga
-            'D' => NumberFormat::FORMAT_TEXT, // Nama Jenazah
-            'E' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Tanggal Kematian
-            'F' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Tanggal Dibuat
+            'A' => NumberFormat::FORMAT_TEXT, // Nama
+            'B' => NumberFormat::FORMAT_NUMBER, // NIK
+            'C' => NumberFormat::FORMAT_TEXT, // Umur
+            'D' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Tanggal Kematian
+            'E' => NumberFormat::FORMAT_TEXT, // Alamat
+            'F' => NumberFormat::FORMAT_TEXT, // Keterangan
         ];
     }
 
     public function columnWidths(): array
     {
         return [
-            'A' => 20, // Nomor Surat
-            'B' => 30, // Nama Kepala Keluarga
-            'C' => 20, // Nomor Kepala Keluarga
-            'D' => 30, // Nama Jenazah
-            'E' => 15, // Tanggal Kematian
-            'F' => 15, // Tanggal Dibuat
+            'A' => 30, // Nama || NIK
+            'B' => 25, // NIK
+            'C' => 15, // Umur
+            'D' => 20, // Tanggal Kematian
+            'E' => 30, // Alamat
+            'F' => 30, // Keterangan
+
         ];
     }
 }

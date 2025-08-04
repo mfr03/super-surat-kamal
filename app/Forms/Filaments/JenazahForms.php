@@ -108,7 +108,7 @@ class JenazahForms
         ];
     }
 
-        public static function formUnique(string $relationField = 'jenazah_id'): array
+    public static function formUnique(string $relationField = 'jenazah_id'): array
     {
         return [
 
@@ -171,7 +171,7 @@ class JenazahForms
                             return $jenazah->id;
                         },
                         function ($state, $set) {
-                            $jenazah = Jenazah::where('warga_id', $state)->first();
+                            $jenazah = Jenazah::with('warga')->find($state);
                             if ($jenazah) {
                                 $set('anak_ke', $jenazah->anak_ke);
                                 $set('tanggal_kematian', $jenazah->tanggal_kematian);
@@ -179,19 +179,26 @@ class JenazahForms
                                 $set('sebab_kematian', $jenazah->sebab_kematian);
                                 $set('tempat_kematian', $jenazah->tempat_kematian);
                                 $set('yang_menerangkan', $jenazah->yang_menerangkan);
+
+                                foreach (WargaForms::fieldMap(FormsConst::JENAZAH) as $wargaKey => $formField) {
+                                    $set($formField, $jenazah->warga->$wargaKey ?? null);
+                                }
                             } else {
-                                // Optionally clear fields if no Jenazah found
                                 $set('anak_ke', null);
                                 $set('tanggal_kematian', null);
                                 $set('pukul_kematian', null);
                                 $set('sebab_kematian', null);
                                 $set('tempat_kematian', null);
                                 $set('yang_menerangkan', null);
+
+                                foreach (WargaForms::fieldMap(FormsConst::JENAZAH) as $formField) {
+                                    $set($formField, null);
+                                }
                             }
                         }
                     )
                     ->afterStateUpdated(function ($state, $set) {
-                        $jenazah = \App\Models\Jenazah::with('warga')->find($state);        
+                        $jenazah = Jenazah::with('warga')->find($state);
                         if ($jenazah) {
                             $set('anak_ke', $jenazah->anak_ke);
                             $set('tanggal_kematian', $jenazah->tanggal_kematian);
@@ -199,9 +206,10 @@ class JenazahForms
                             $set('sebab_kematian', $jenazah->sebab_kematian);
                             $set('tempat_kematian', $jenazah->tempat_kematian);
                             $set('yang_menerangkan', $jenazah->yang_menerangkan);
-                                foreach (WargaForms::fieldMap(FormsConst::JENAZAH) as $wargaKey => $formField) {
-                                    $set($formField, $jenazah->warga->$wargaKey ?? null);
-                                }
+
+                            foreach (WargaForms::fieldMap(FormsConst::JENAZAH) as $wargaKey => $formField) {
+                                $set($formField, $jenazah->warga->$wargaKey ?? null);
+                            }
                         } else {
                             $set('anak_ke', null);
                             $set('tanggal_kematian', null);

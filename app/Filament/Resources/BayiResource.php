@@ -15,7 +15,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BayiResource extends Resource
-{
+{   
+    protected static array $excludeTitleCasedFields = [
+        'jenis_kelamin',
+        'tempat_dilahirkan',
+        'tanggal_lahir',
+        'pukul_lahir',
+        'jenis_kelahiran',
+        'kelahiran_ke',
+        'penolong_kelahiran',
+        'berat_bayi',
+        'panjang_bayi',
+        'created_at',
+        'updated_at',
+    ];
+
+
     protected static ?string $model = Bayi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
@@ -33,12 +48,12 @@ class BayiResource extends Resource
         return $table
             ->columns(components: BayiForms::table())
             ->filters([
-                //
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->bulkActions([ 
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
